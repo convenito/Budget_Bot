@@ -2,3 +2,6 @@
 *.lock
 .idea/
 /budget_app/data_collector/serviceacct_spreadsheet.json
+/budget_app/__pycache__
+/budget_app/data_collector/__pycache__
+/budget_app/budget_data_description/__pycache__
