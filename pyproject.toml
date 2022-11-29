@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "budget_app"
+name = "Budget_2022"
 version = "0.1.0"
 description = ""
 authors = ["Ilya Yudin"]
@@ -7,8 +7,13 @@ authors = ["Ilya Yudin"]
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^1.10.2"
-aiogram = "^2.22.1"
-aiohttp = "^3.8.3"
+aenum = "3.1.5"
+aiogram = "^2.23.1"
+aiohttp = "^3.8.1"
+gspread-asyncio = "^1.7.1"
+google-api-python-client = "^2.65.0"
+google-auth-httplib2 = "^0.1.0"
+google-auth-oauthlib = "^0.7.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.2"
