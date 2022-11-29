@@ -1,0 +1,4 @@
+*.env
+*.lock
+.idea/
+/budget_app/data_collector/serviceacct_spreadsheet.json
