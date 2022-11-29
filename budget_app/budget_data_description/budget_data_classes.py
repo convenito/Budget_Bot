@@ -95,8 +95,8 @@ category_map: Dict[BudgetType, Type[StrEnum]] = {
 }
 
 
-# func to convert raw data from telegram bot into MoneyFLow class object
 def convert_to_money_flow(data: dict) -> MoneyFlow:
+    """ Function to convert raw data from telegram bot into MoneyFLow class object """
     required_keys = ['budget_type', 'category']
     final_data = {
         'budget': {k: v for k, v in data.items() if k in required_keys},
