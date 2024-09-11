@@ -1,7 +1,12 @@
-from pydantic import BaseModel, Field
-from typing import Optional, Literal, Type, Dict
 import datetime
-from aenum import StrEnum
+from enum import StrEnum
+from pydantic import BaseModel, Field
+from typing import Literal, Type, Dict
+
+
+class Currency(StrEnum):
+    EUR = "EUR"
+    RUB = "RUB"
 
 
 class BudgetType(StrEnum):
@@ -25,6 +30,8 @@ class CategoryIncome(StrEnum):
 class CategoryDailySpent(StrEnum):
     """ Class contains daily spent categories """
     FOOD = 'Питание'
+    CAFE = 'Кафе, рестораны'
+    ALCO = 'Алкоголь'
     TRANSPORT = 'Проезд'
     CLOTHES = 'Одежда'
     PRESENTS = 'Подарки'
@@ -33,10 +40,13 @@ class CategoryDailySpent(StrEnum):
     FITNESS = 'Фитнес'
     SMALL_PURCHASES = 'Мелкие покупки'
     CHEMICALS = 'Бытовая химия'
+    EDUCATION = 'Обучение, английский'
+    TAXES = 'Налоги'
+    BEAUTY = 'Уход, косметика'
 
 
 class CategoryFlatSpent(StrEnum):
-    """ Class contains categories of spents for flat """
+    """ Class contains categories of spent for flat """
     RENT = 'Аренда'
     UTILITIES = 'ЖКХ, Интернет'
     MORTGAGE = 'Ипотека'
@@ -47,7 +57,7 @@ class CategoryFlatSpent(StrEnum):
 
 
 class CategoryVacationSpent(StrEnum):
-    """ Class contains categories for spents on vacation """
+    """ Class contains categories for spent on vacation """
     TICKETS = 'Билеты'
     LIVING = 'Проживание'
     MONEY = 'Деньги с собой'
@@ -67,23 +77,25 @@ class BudgetDailySpent(BaseModel):
 
 
 class BudgetFlatSpent(BaseModel):
-    """ Class for flat spents budget data """
+    """ Class for flat spent budget data """
     budget_type: Literal[BudgetType.FLATSPENT]  # type: ignore
     category: CategoryFlatSpent
 
 
 class BudgetVacationSpent(BaseModel):
-    """ Class for vacation spents budget data """
+    """ Class for vacation spent budget data """
     budget_type: Literal[BudgetType.VACATIONSPENT]  # type: ignore
     category: CategoryVacationSpent
 
 
 class MoneyFlow(BaseModel):
     """ BaseModel for budget data """
-    budget: BudgetIncome | BudgetDailySpent | BudgetFlatSpent | BudgetVacationSpent = Field(..., discriminator='budget_type')
+    budget: BudgetIncome | BudgetDailySpent | BudgetFlatSpent | BudgetVacationSpent = Field(
+        ..., discriminator='budget_type')
     date: datetime.datetime | datetime.date
-    value: int
-    comment: Optional[str]
+    value: float
+    currency: Currency = Currency.EUR.value
+    comment: str | None = None
 
 
 # Category map for telegram bot keyboard to choose right categories from budget type
@@ -93,15 +105,3 @@ category_map: Dict[BudgetType, Type[StrEnum]] = {
     BudgetType.FLATSPENT: CategoryFlatSpent,
     BudgetType.VACATIONSPENT: CategoryVacationSpent,
 }
-
-
-def convert_to_money_flow(data: dict) -> MoneyFlow:
-    """ Function to convert raw data from telegram bot into MoneyFLow class object """
-    required_keys = ['budget_type', 'category']
-    final_data = {
-        'budget': {k: v for k, v in data.items() if k in required_keys},
-        'date': data.get('date'),
-        'value': data.get('value'),
-        'comment': data.get('comment')
-    }
-    return MoneyFlow(**final_data)
