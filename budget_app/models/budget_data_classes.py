@@ -94,7 +94,7 @@ class MoneyFlow(BaseModel):
         ..., discriminator='budget_type')
     date: datetime.datetime | datetime.date
     value: float
-    currency: Currency = Currency.EUR.value
+    currency: Currency = Currency.EUR
     comment: str | None = None
 
 

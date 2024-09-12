@@ -12,7 +12,11 @@ async def main() -> None:
     )
     bot_settings = BotSettings()
     logging.info("Starting the Data Collectors...")
-    data_collectors = [GoogleSheetsCollector(bot_settings.gsheetkey)]
+    data_collectors = [
+        GoogleSheetsCollector(
+            bot_settings.gsheetkey, bot_settings.google_service_json_file
+        )
+    ]
     logging.info("Data Collectors started successfully")
     tg_bot = TelegramSource(bot_settings.token, data_collectors)
     logging.info("Start the telegram bot")

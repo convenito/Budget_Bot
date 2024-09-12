@@ -1,4 +1,3 @@
-import os
 import asyncio
 import gspread_asyncio
 import logging
@@ -18,8 +17,9 @@ class DataCollector(ABC):
 class GoogleSheetsCollector(DataCollector):
     """ Operates with budget data using Google Sheet API """
 
-    def __init__(self, sheet_key: str) -> None:
+    def __init__(self, sheet_key: str, google_service_json_file: str) -> None:
         self.sheet_key = sheet_key
+        self.google_service_json_file = google_service_json_file
         self.scopes = [
             "https://spreadsheets.google.com/feeds",
             "https://www.googleapis.com/auth/spreadsheets",
@@ -29,10 +29,7 @@ class GoogleSheetsCollector(DataCollector):
         self.write_lock = asyncio.Lock()
 
     def get_creds(self):
-        file_name = os.path.join(
-            os.path.dirname(__file__), "serviceacct_spreadsheet.json"
-        )
-        creds = Credentials.from_service_account_file(file_name)
+        creds = Credentials.from_service_account_file(self.google_service_json_file)
         return creds.with_scopes(self.scopes)
 
     async def save_budget_data(self, budget_data: MoneyFlow) -> None:

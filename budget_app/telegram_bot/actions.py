@@ -5,12 +5,12 @@ from ..models import MoneyFlow, Currency
 
 def process_date(date_message: str) -> datetime | None:
     if date_message.lower() == "today":
-        budget_date = datetime.today()
+        budget_date: datetime = datetime.today()
     elif date_message.lower() == "yesterday":
         budget_date = datetime.today() - timedelta(days=1)
     else:
         try:
-            budget_date: datetime = datetime.strptime(
+            budget_date = datetime.strptime(
                 date_message, '%d.%m'
             ).replace(year=date.today().year)
         except ValueError:
