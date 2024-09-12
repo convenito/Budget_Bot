@@ -5,7 +5,7 @@ description = ""
 authors = ["Ilya Yudin"]
 
 [tool.poetry.dependencies]
-python = "3.12"
+python = "3.11.9"
 pydantic = "2.8.2"
 pydantic-settings = "2.4.0"
 aiogram = "3.13.0"
