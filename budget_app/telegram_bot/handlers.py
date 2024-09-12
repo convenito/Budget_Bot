@@ -51,8 +51,9 @@ async def command_start(message: t.Message, state: FSMContext) -> Any:
         '1. Choose type:', reply_markup=get_keyboard(BudgetType)
     )
     await state.update_data(reply_message_id=reply.message_id)
+    current_state = await state.get_state()
     logging.info(f"Got message: {message.text}. Entering FSM. "
-                 f"Current state: {await state.get_state()}")
+                 f"Current state: {current_state}")
 
 
 # Handle all states for cancel
@@ -108,7 +109,7 @@ async def process_category(callback: t.CallbackQuery, state: FSMContext) -> None
     chosen_category = callback.data
     await callback.answer(text=f'2/6 - Category: {chosen_category.capitalize()}')
     logging.info(f"Got category: {chosen_category}. "
-                 f"Current state: {state.get_state()}")
+                 f"Current state: {await state.get_state()}")
 
     # Remove inline keyboard from previous message and edit text
     state_data = await state.get_data()
@@ -174,10 +175,10 @@ async def process_date_from_keyboard(
             'or "/cancel" to exit'
         )
         return
-    await callback.answer(
-        text=f'3/6 - Date: {datetime.strftime(budget_date, "%d/%m/%Y")}')
-    logging.info(f"Got date: {datetime.strftime(budget_date, "%d/%m/%Y")}. "
-                 f"Current state: {state.get_state()}")
+    current_date = datetime.strftime(budget_date, "%d/%m/%Y")
+    current_state = await state.get_state()
+    await callback.answer(text=f'3/6 - Date: {current_date}')
+    logging.info(f"Got date: {current_date}. Current state: {current_state}")
 
     # Remove inline keyboard from previous message and edit text
     state_data = await state.get_data()
