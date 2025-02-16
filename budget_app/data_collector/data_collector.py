@@ -1,9 +1,11 @@
-import os
 import asyncio
 import gspread_asyncio
-from google.oauth2.service_account import Credentials
+import logging
 from abc import ABC, abstractmethod
-from budget_app.budget_data_description.budget_data_classes import MoneyFlow
+
+from google.oauth2.service_account import Credentials
+
+from ..models import MoneyFlow
 
 
 class DataCollector(ABC):
@@ -14,22 +16,28 @@ class DataCollector(ABC):
 
 class GoogleSheetsCollector(DataCollector):
     """ Operates with budget data using Google Sheet API """
-    def __init__(self, cred_file_name: str = os.path.join(os.path.dirname(__file__), "serviceacct_spreadsheet.json")):
-        creds = Credentials.from_service_account_file(cred_file_name)
-        scoped = creds.with_scopes([
+
+    def __init__(self, sheet_key: str, google_service_json_file: str) -> None:
+        self.sheet_key = sheet_key
+        self.google_service_json_file = google_service_json_file
+        self.scopes = [
             "https://spreadsheets.google.com/feeds",
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive",
-        ])
-        self.agcm = gspread_asyncio.AsyncioGspreadClientManager(lambda: scoped)
-        self.lock = asyncio.Lock()
+        ]
+        self.agcm = gspread_asyncio.AsyncioGspreadClientManager(self.get_creds)
+        self.write_lock = asyncio.Lock()
+
+    def get_creds(self):
+        creds = Credentials.from_service_account_file(self.google_service_json_file)
+        return creds.with_scopes(self.scopes)
 
     async def save_budget_data(self, budget_data: MoneyFlow) -> None:
-        async with self.lock:
+        async with self.write_lock:
+            logging.info(f"Saving budget data: {budget_data}")
             agc = await self.agcm.authorize()
-
             # Open the spreadsheet and get access to the worksheet
-            budget_ss = await agc.open_by_key(os.getenv('GSHEETKEY'))
+            budget_ss = await agc.open_by_key(self.sheet_key)
             worksheet_name: str = budget_data.budget.budget_type.value
             worksheet = await budget_ss.worksheet(worksheet_name)
 
@@ -38,7 +46,8 @@ class GoogleSheetsCollector(DataCollector):
                 budget_data.date.strftime('%d.%m.%Y'),
                 budget_data.budget.category.value,
                 budget_data.value,
-                budget_data.comment
+                budget_data.currency,
+                budget_data.comment,
             ]
 
             await worksheet.append_row(values)

@@ -1,26 +1,22 @@
 [tool.poetry]
-name = "Budget_2022"
-version = "0.1.0"
+name = "Budget_app"
+version = "0.2.0"
 description = ""
 authors = ["Ilya Yudin"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-pydantic = "^1.10.2"
-aenum = "3.1.5"
-aiogram = "^2.23.1"
-aiohttp = "^3.8.1"
-gspread-asyncio = "^1.7.1"
-google-api-python-client = "^2.65.0"
-google-auth-httplib2 = "^0.1.0"
-google-auth-oauthlib = "^0.7.1"
+python = "3.11.9"
+pydantic = "2.8.2"
+pydantic-settings = "2.4.0"
+aiogram = "3.13.0"
+aiohttp = "3.9.2"
+gspread-asyncio = "2.0.0"
+google-api-python-client = "^2.144.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.4.2"
-pytest-asyncio = "^0.12.0"
-pytest-runner = "^5.2"
-mypy = "^0.981"
+pytest = "7.4.3"
+mypy = "1.8.0"
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.9.0"]
+build-backend = "poetry.core.masonry.api"
